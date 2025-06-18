@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# MariaDB mysql.sock 파일 경로 my.cnf, mysql.cnf, mariadb.cnf 등에 정의된 경로와 실제 경로가 동일한 경우 생략가능
+export SOCKET_FILE="/run/mysqld/mysqld.sock"
+
 # 백업 파일명은 hostname 으로 생성한다
 export BACKUP_DB=$(/usr/bin/hostname)
 
@@ -49,7 +52,7 @@ if [ ${BACKUP_TYPE} == "full" ]; then
 
   #### full backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} to ${TARGET_DIR}"
-  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --socket=/var/lib/mysql/mysql.sock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
 
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
@@ -58,7 +61,7 @@ if [ ${BACKUP_TYPE} == "full" ]; then
 
   #### full backup prepareing ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup prepareing to ${TARGET_NM}"
-  mariabackup --prepare --no-lock --socket=/var/lib/mysql/mysql.sock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --prepare --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup prepare fail, show ${LOG_PATH}"
       exit 9
@@ -79,7 +82,7 @@ else
 
   #### incremental backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} for ${LAST_FULL_BACKUP_NM}"
-  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --socket=/var/lib/mysql/mysql.sock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
       exit 9 
@@ -87,7 +90,7 @@ else
 
   #### incremental prepareing ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} prepareing ${TARGET_NM} to ${LAST_FULL_BACKUP_NM}"
-  mariabackup --prepare --no-lock --socket=/var/lib/mysql/mysql.sock --target-dir=${LAST_FULL_BACKUP_PATH} --incremental-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --prepare --no-lock --target-dir=${LAST_FULL_BACKUP_PATH} --incremental-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup prepare fail, show ${LOG_PATH}"
       exit 9 
