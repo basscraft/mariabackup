@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 백업 파일명은 hostname 으로 생성한다
+# 백업 파일명은 hostname 으로 생성
 export BACKUP_DB=$(/usr/bin/hostname)
 
 # 백업 경로
