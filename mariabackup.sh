@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# MariaDB mysql.sock 파일 경로 my.cnf, mysql.cnf, mariadb.cnf 등에 정의된 경로와 실제 경로가 동일한 경우 생략가능
-export SOCKET_FILE="/run/mysqld/mysqld.sock"
+# 백업 계정 (MariaDB)
+export BACKUP_USER_ID="mariabackup"
+export BACKUP_USER_PASSWORD="보안삭제"
 
-# 백업 파일명은 hostname 으로 생성한다
+# 백업 파일명은 hostname 으로 생성
 export BACKUP_DB=$(/usr/bin/hostname)
 
 # 백업 경로
@@ -52,7 +53,7 @@ if [ ${BACKUP_TYPE} == "full" ]; then
 
   #### full backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} to ${TARGET_DIR}"
-  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=${BACKUP_USER_ID} --password='${BACKUP_USER_PASSWORD}' --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
 
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
@@ -82,7 +83,7 @@ else
 
   #### incremental backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} for ${LAST_FULL_BACKUP_NM}"
-  mariabackup --backup --user=mariabackup --password='root 계정 비밀번호' --no-lock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=${BACKUP_USER_ID} --password='${BACKUP_USER_PASSWORD}' --no-lock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
       echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
       exit 9 
