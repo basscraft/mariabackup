@@ -53,10 +53,10 @@ if [ ${BACKUP_TYPE} == "full" ]; then
 
   #### full backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} to ${TARGET_DIR}"
-  mariabackup --backup --user=${BACKUP_USER_ID} --password='${BACKUP_USER_PASSWORD}' --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=${BACKUP_USER_ID} --password="${BACKUP_USER_PASSWORD}" --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
 
   if [ $? -ne 0 ];then
-      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
+      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabackup fail, show ${LOG_PATH}"
       exit 9
   fi
 
@@ -64,7 +64,7 @@ if [ ${BACKUP_TYPE} == "full" ]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup prepareing to ${TARGET_NM}"
   mariabackup --prepare --no-lock --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
-      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup prepare fail, show ${LOG_PATH}"
+      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabackup prepare fail, show ${LOG_PATH}"
       exit 9
   fi
 
@@ -83,18 +83,18 @@ else
 
   #### incremental backup ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} backup ${TARGET_NM} for ${LAST_FULL_BACKUP_NM}"
-  mariabackup --backup --user=${BACKUP_USER_ID} --password='${BACKUP_USER_PASSWORD}' --no-lock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
+  mariabackup --backup --user=${BACKUP_USER_ID} --password="${BACKUP_USER_PASSWORD}" --no-lock --incremental-basedir=${LAST_FULL_BACKUP_PATH} --target-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
-      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup fail, show ${LOG_PATH}"
-      exit 9 
+      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabackup fail, show ${LOG_PATH}"
+      exit 9
   fi
 
   #### incremental prepareing ##########
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] Start ${BACKUP_TYPE} prepareing ${TARGET_NM} to ${LAST_FULL_BACKUP_NM}"
   mariabackup --prepare --no-lock --target-dir=${LAST_FULL_BACKUP_PATH} --incremental-dir=${TARGET_PATH} >> $LOG_PATH 2>&1
   if [ $? -ne 0 ];then
-      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabckup prepare fail, show ${LOG_PATH}"
-      exit 9 
+      echo "[$(date '+%Y-%m-%d %H:%M:%S')] mariabackup prepare fail, show ${LOG_PATH}"
+      exit 9
   fi
 
   #### compress incremental backup ##########
