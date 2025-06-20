@@ -6,4 +6,5 @@
 ### crontab
 
 0 3 * * * /data/backup/deletebackup.sh >> /data/backup/logs/mariabackup.log 2>&1
+
 0 4 * * * /data/backup/mariabackup.sh >> /data/backup/logs/mariabackup.log 2>&1
